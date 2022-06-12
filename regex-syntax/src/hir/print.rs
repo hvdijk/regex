@@ -144,6 +144,18 @@ impl<W: fmt::Write> Visitor for Writer<W> {
             HirKind::WordBoundary(hir::WordBoundary::AsciiNegate) => {
                 self.wtr.write_str(r"(?-u:\B)")?;
             }
+            HirKind::WordBoundary(hir::WordBoundary::UnicodeStart) => {
+                self.wtr.write_str(r"\<")?;
+            }
+            HirKind::WordBoundary(hir::WordBoundary::AsciiStart) => {
+                self.wtr.write_str(r"(?-u:\<)")?;
+            }
+            HirKind::WordBoundary(hir::WordBoundary::UnicodeEnd) => {
+                self.wtr.write_str(r"\>")?;
+            }
+            HirKind::WordBoundary(hir::WordBoundary::AsciiEnd) => {
+                self.wtr.write_str(r"(?-u:\>)")?;
+            }
             HirKind::Group(ref x) => match x.kind {
                 hir::GroupKind::CaptureIndex(_) => {
                     self.wtr.write_str("(")?;

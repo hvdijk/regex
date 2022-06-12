@@ -401,6 +401,8 @@ struct EmptyFlags {
     start_line: bool,
     end_line: bool,
     word_boundary: bool,
+    word_start: bool,
+    word_end: bool,
     not_word_boundary: bool,
 }
 
@@ -926,6 +928,8 @@ impl<'a> Fsm<'a> {
                 flags.not_word_boundary = true;
             } else {
                 flags.word_boundary = true;
+                flags.word_start = is_word ^ self.prog.is_reverse;
+                flags.word_end = is_word_last ^ self.prog.is_reverse;
             }
             // Now follow epsilon transitions from every NFA state, but make
             // sure we only follow transitions that satisfy our flags.
@@ -1100,15 +1104,28 @@ impl<'a> Fsm<'a> {
                             {
                                 ip = inst.goto as InstPtr;
                             }
+                            WordStartAscii if flags.word_start => {
+                                ip = inst.goto as InstPtr;
+                            }
+                            WordEndAscii if flags.word_end => {
+                                ip = inst.goto as InstPtr;
+                            }
                             WordBoundary if flags.word_boundary => {
                                 ip = inst.goto as InstPtr;
                             }
                             NotWordBoundary if flags.not_word_boundary => {
                                 ip = inst.goto as InstPtr;
                             }
+                            WordStart if flags.word_start => {
+                                ip = inst.goto as InstPtr;
+                            }
+                            WordEnd if flags.word_end => {
+                                ip = inst.goto as InstPtr;
+                            }
                             StartLine | EndLine | StartText | EndText
                             | WordBoundaryAscii | NotWordBoundaryAscii
-                            | WordBoundary | NotWordBoundary => {
+                            | WordStartAscii | WordEndAscii | WordBoundary
+                            | NotWordBoundary | WordStart | WordEnd => {
                                 break;
                             }
                         }
@@ -1424,6 +1441,8 @@ impl<'a> Fsm<'a> {
             empty_flags.not_word_boundary = true;
         } else {
             empty_flags.word_boundary = true;
+            empty_flags.word_start = is_word;
+            empty_flags.word_end = is_word_last;
         }
         (empty_flags, state_flags)
     }
@@ -1454,6 +1473,8 @@ impl<'a> Fsm<'a> {
             empty_flags.not_word_boundary = true;
         } else {
             empty_flags.word_boundary = true;
+            empty_flags.word_start = is_word_last;
+            empty_flags.word_end = is_word;
         }
         (empty_flags, state_flags)
     }

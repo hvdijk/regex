@@ -1112,6 +1112,10 @@ pub enum AssertionKind {
     WordBoundary,
     /// `\B`
     NotWordBoundary,
+    /// `\<`
+    WordStart,
+    /// `\>`
+    WordEnd,
 }
 
 /// A repetition operation applied to a regular expression.

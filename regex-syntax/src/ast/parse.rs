@@ -1532,6 +1532,14 @@ impl<'s, P: Borrow<Parser>> ParserI<'s, P> {
                 span: span,
                 kind: ast::AssertionKind::NotWordBoundary,
             })),
+            '<' => Ok(Primitive::Assertion(ast::Assertion {
+                span: span,
+                kind: ast::AssertionKind::WordStart,
+            })),
+            '>' => Ok(Primitive::Assertion(ast::Assertion {
+                span: span,
+                kind: ast::AssertionKind::WordEnd,
+            })),
             _ => Err(self.error(span, ast::ErrorKind::EscapeUnrecognized)),
         }
     }

@@ -193,6 +193,14 @@ impl<'t> Input for CharInput<'t> {
                 let (c1, c2) = (self.previous_char(at), self.next_char(at));
                 c1.is_word_char() == c2.is_word_char()
             }
+            WordStart => {
+                let (c1, c2) = (self.previous_char(at), self.next_char(at));
+                !c1.is_word_char() && c2.is_word_char()
+            }
+            WordEnd => {
+                let (c1, c2) = (self.previous_char(at), self.next_char(at));
+                c1.is_word_char() && !c2.is_word_char()
+            }
             WordBoundaryAscii => {
                 let (c1, c2) = (self.previous_char(at), self.next_char(at));
                 c1.is_word_byte() != c2.is_word_byte()
@@ -200,6 +208,14 @@ impl<'t> Input for CharInput<'t> {
             NotWordBoundaryAscii => {
                 let (c1, c2) = (self.previous_char(at), self.next_char(at));
                 c1.is_word_byte() == c2.is_word_byte()
+            }
+            WordStartAscii => {
+                let (c1, c2) = (self.previous_char(at), self.next_char(at));
+                !c1.is_word_byte() && c2.is_word_byte()
+            }
+            WordEndAscii => {
+                let (c1, c2) = (self.previous_char(at), self.next_char(at));
+                c1.is_word_byte() && !c2.is_word_byte()
             }
         }
     }
@@ -286,6 +302,14 @@ impl<'t> Input for ByteInput<'t> {
                 let (c1, c2) = (self.previous_char(at), self.next_char(at));
                 c1.is_word_char() == c2.is_word_char()
             }
+            WordStart => {
+                let (c1, c2) = (self.previous_char(at), self.next_char(at));
+                !c1.is_word_char() && c2.is_word_char()
+            }
+            WordEnd => {
+                let (c1, c2) = (self.previous_char(at), self.next_char(at));
+                c1.is_word_char() && !c2.is_word_char()
+            }
             WordBoundaryAscii => {
                 let (c1, c2) = (self.previous_char(at), self.next_char(at));
                 if self.only_utf8 {
@@ -313,6 +337,34 @@ impl<'t> Input for ByteInput<'t> {
                     }
                 }
                 c1.is_word_byte() == c2.is_word_byte()
+            }
+            WordStartAscii => {
+                let (c1, c2) = (self.previous_char(at), self.next_char(at));
+                if self.only_utf8 {
+                    // If we must match UTF-8, then we can't match word
+                    // boundaries at invalid UTF-8.
+                    if c1.is_none() && !at.is_start() {
+                        return false;
+                    }
+                    if c2.is_none() && !at.is_end() {
+                        return false;
+                    }
+                }
+                !c1.is_word_byte() && c2.is_word_byte()
+            }
+            WordEndAscii => {
+                let (c1, c2) = (self.previous_char(at), self.next_char(at));
+                if self.only_utf8 {
+                    // If we must match UTF-8, then we can't match word
+                    // boundaries at invalid UTF-8.
+                    if c1.is_none() && !at.is_start() {
+                        return false;
+                    }
+                    if c2.is_none() && !at.is_end() {
+                        return false;
+                    }
+                }
+                c1.is_word_byte() && !c2.is_word_byte()
             }
         }
     }

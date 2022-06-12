@@ -1302,7 +1302,7 @@ pub enum Anchor {
 /// The high-level intermediate representation for a word-boundary assertion.
 ///
 /// A matching word boundary assertion is always zero-length.
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq, Copy)]
 pub enum WordBoundary {
     /// Match a Unicode-aware word boundary. That is, this matches a position
     /// where the left adjacent character and right adjacent character
@@ -1310,19 +1310,40 @@ pub enum WordBoundary {
     Unicode,
     /// Match a Unicode-aware negation of a word boundary.
     UnicodeNegate,
+    /// Match a Unicode-aware word start. That is, this matches a position
+    /// where the left adjacent character and right adjacent character
+    /// correspond to a non-word and word character.
+    UnicodeStart,
+    /// Match a Unicode-aware word end. That is, this matches a position
+    /// where the left adjacent character and right adjacent character
+    /// correspond to a word and non-word character.
+    UnicodeEnd,
     /// Match an ASCII-only word boundary. That is, this matches a position
     /// where the left adjacent character and right adjacent character
     /// correspond to a word and non-word or a non-word and word character.
     Ascii,
     /// Match an ASCII-only negation of a word boundary.
     AsciiNegate,
+    /// Match an ASCII-only word boundary. That is, this matches a position
+    /// where the left adjacent character and right adjacent character
+    /// correspond to a non-word and word character.
+    AsciiStart,
+    /// Match an ASCII-only word boundary. That is, this matches a position
+    /// where the left adjacent character and right adjacent character
+    /// correspond to a word and non-word character.
+    AsciiEnd,
 }
 
 impl WordBoundary {
     /// Returns true if and only if this word boundary assertion is negated.
     pub fn is_negated(&self) -> bool {
         match *self {
-            WordBoundary::Unicode | WordBoundary::Ascii => false,
+            WordBoundary::Unicode
+            | WordBoundary::Ascii
+            | WordBoundary::UnicodeStart
+            | WordBoundary::AsciiStart
+            | WordBoundary::UnicodeEnd
+            | WordBoundary::AsciiEnd => false,
             WordBoundary::UnicodeNegate | WordBoundary::AsciiNegate => true,
         }
     }

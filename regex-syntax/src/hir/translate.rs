@@ -763,6 +763,16 @@ impl<'t, 'p> TranslatorI<'t, 'p> {
                     hir::WordBoundary::AsciiNegate
                 })
             }
+            ast::AssertionKind::WordStart => Hir::word_boundary(if unicode {
+                hir::WordBoundary::UnicodeStart
+            } else {
+                hir::WordBoundary::AsciiStart
+            }),
+            ast::AssertionKind::WordEnd => Hir::word_boundary(if unicode {
+                hir::WordBoundary::UnicodeEnd
+            } else {
+                hir::WordBoundary::AsciiEnd
+            }),
         })
     }
 

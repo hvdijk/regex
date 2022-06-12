@@ -318,7 +318,9 @@ impl Compiler {
             Anchor(hir::Anchor::EndText) => {
                 self.c_empty_look(prog::EmptyLook::EndText)
             }
-            WordBoundary(hir::WordBoundary::Unicode) => {
+            WordBoundary(wb @ hir::WordBoundary::Unicode)
+            | WordBoundary(wb @ hir::WordBoundary::UnicodeStart)
+            | WordBoundary(wb @ hir::WordBoundary::UnicodeEnd) => {
                 if !cfg!(feature = "unicode-perl") {
                     return Err(Error::Syntax(
                         "Unicode word boundaries are unavailable when \
@@ -335,7 +337,16 @@ impl Compiler {
                 // when it sees an ASCII byte that maps to a byte class with
                 // non-ASCII bytes. This ensures that never happens.
                 self.byte_classes.set_range(0, 0x7F);
-                self.c_empty_look(prog::EmptyLook::WordBoundary)
+                self.c_empty_look(match wb {
+                    hir::WordBoundary::Unicode => {
+                        prog::EmptyLook::WordBoundary
+                    }
+                    hir::WordBoundary::UnicodeStart => {
+                        prog::EmptyLook::WordStart
+                    }
+                    hir::WordBoundary::UnicodeEnd => prog::EmptyLook::WordEnd,
+                    _ => unreachable!(),
+                })
             }
             WordBoundary(hir::WordBoundary::UnicodeNegate) => {
                 if !cfg!(feature = "unicode-perl") {
@@ -354,6 +365,14 @@ impl Compiler {
             WordBoundary(hir::WordBoundary::Ascii) => {
                 self.byte_classes.set_word_boundary();
                 self.c_empty_look(prog::EmptyLook::WordBoundaryAscii)
+            }
+            WordBoundary(hir::WordBoundary::AsciiStart) => {
+                self.byte_classes.set_word_boundary();
+                self.c_empty_look(prog::EmptyLook::WordStartAscii)
+            }
+            WordBoundary(hir::WordBoundary::AsciiEnd) => {
+                self.byte_classes.set_word_boundary();
+                self.c_empty_look(prog::EmptyLook::WordEndAscii)
             }
             WordBoundary(hir::WordBoundary::AsciiNegate) => {
                 self.byte_classes.set_word_boundary();

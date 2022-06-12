@@ -351,10 +351,18 @@ pub enum EmptyLook {
     WordBoundary,
     /// Word character on both sides or non-word character on both sides.
     NotWordBoundary,
+    /// Word character on the right side and non-word character on other.
+    WordStart,
+    /// Word character on the left side and non-word character on other.
+    WordEnd,
     /// ASCII word boundary.
     WordBoundaryAscii,
     /// Not ASCII word boundary.
     NotWordBoundaryAscii,
+    /// ASCII word start.
+    WordStartAscii,
+    /// ASCII word end.
+    WordEndAscii,
 }
 
 /// Representation of the Char instruction.

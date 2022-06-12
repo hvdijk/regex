@@ -263,6 +263,8 @@ impl<W: fmt::Write> Writer<W> {
             EndText => self.wtr.write_str(r"\z"),
             WordBoundary => self.wtr.write_str(r"\b"),
             NotWordBoundary => self.wtr.write_str(r"\B"),
+            WordStart => self.wtr.write_str(r"\<"),
+            WordEnd => self.wtr.write_str(r"\>"),
         }
     }
 
